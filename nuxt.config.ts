@@ -5,9 +5,28 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   css: ['@/assets/css/main.css'],
+  modules: ['@pinia/nuxt'],
   vite: {
     plugins: [
       tailwindcss()
     ]
+  },
+  runtimeConfig: {
+    openAiApiKey: process.env.OPENAI_API_KEY,
+    mockResponse: process.env.MOCK_RESPONSE,
+    jwtSecret: process.env.JWT_SECRET,
+  },
+  nitro: {
+    experimental: {
+      database: true
+    },
+    database: {
+      default: {
+        connector: 'sqlite',
+        options: {
+          name: 'questions'
+        }
+      }
+    }
   }
 })

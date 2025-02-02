@@ -10,7 +10,7 @@ const promptTemplate = `
 Gere {count} perguntas sobre {subject} com o tema {topic}
 `
 
-export default defineEventHandler(async (event) => {
+export default defineProtectedHandler(async (event) => {
   const body = await readBody(event)
   const { count, subject, topic } = bodySchema.parse(body)
 

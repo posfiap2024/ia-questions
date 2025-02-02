@@ -22,7 +22,7 @@ Avalie a resposta do aluno:
 </student_answer>
 `
 
-export default defineEventHandler(async (event) => {
+export default defineProtectedHandler(async (event) => {
   const body = await readBody(event)
   const { question, answer, student_answer: studentAnswer } = bodySchema.parse(body)
 

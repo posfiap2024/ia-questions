@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="flex items-center justify-center gap-2 px-4 py-2 rounded-md"
+    class="flex items-center justify-center gap-2 px-4 h-10 rounded-md"
     :class="classes"
   >
     <span class="text-sm font-bold">

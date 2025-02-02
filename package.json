@@ -10,15 +10,24 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.9.0",
     "@tailwindcss/vite": "^4.0.0",
     "@vueuse/core": "^12.5.0",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "jsonwebtoken": "^9.0.2",
     "nuxt": "^3.15.3",
     "openai": "^4.80.1",
+    "pinia": "^2.3.1",
     "tailwindcss": "^4.0.0",
     "vue": "latest",
     "vue-router": "latest",
     "xml-js": "^1.6.11",
     "zod": "^3.24.1"
   },
-  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2",
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.8"
+  }
 }
