@@ -73,7 +73,7 @@ O formato de resposta deve seguir a seguinte estrutura XML de exemplo abaixo:
   </question>
 </questions>
 
-CRÍTICO: RETORNE APENAS AS QUESTÕES NO FORMATO ESPECIFICADO.
+CRÍTICO: RETORNE APENAS AS QUESTÕES NO FORMATO ESPECIFICADO. JA INICIE SUA RESPOSTA COM O XML. NAO INCLUA A PALAVRA XML, NEM NENHUMA ASPAS NO INICIO E FIM DA RESPOSTA. ALTERNE A POSIÇÃO DAS QUESTOES CORRETAS.
 `
 
 export async function useQuestions(prompt: string) {
