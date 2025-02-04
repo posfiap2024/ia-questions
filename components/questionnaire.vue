@@ -1,10 +1,11 @@
 <template>
-  <template v-if="status === 'success'">
+  <div class="flex flex-col bg-neutral-100 p-6 rounded-2xl shadow-md">
     <KeepAlive>
       <component
         :is="QuestionComponent"
-        :key="activeQuestion"
         v-bind="question"
+        :key="activeQuestion"
+        :preview="preview"
       />
     </KeepAlive>
 
@@ -25,31 +26,24 @@
         Próximo
       </UiButton>
     </div>
-  </template>
-
-  <Loading v-else />
+  </div>
 </template>
 
 <script setup lang="ts">
   import OpenQuestion from './open-question.vue'
   import ClosedQuestion from './closed-question.vue'
 
-  const { data: questionnaire, status } = await useLazyFetch(
-    '/api/questions',
-    {
-      method: 'POST',
-      body: {
-        count: 5,
-        subject: 'história',
-        topic: 'Brasil Império'
-      },
-      server: false
-    }
-  )
+  interface Props {
+    questions: any[],
+    preview?: boolean
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    preview: false
+  })
 
   const activeQuestion = ref(0)
-  const questions = computed(() => questionnaire.value?.questions || [])
-  const question = computed(() => questions.value[activeQuestion.value])
+  const question = computed(() => props.questions[activeQuestion.value])
 
   const QuestionComponent = computed(() => {
     switch (question.value?.type) {

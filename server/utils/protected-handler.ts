@@ -3,9 +3,11 @@ import { defineEventHandler } from 'h3'
 import jwt from 'jsonwebtoken'
 
 export function defineProtectedHandler<T extends EventHandlerRequest, D>(
-  handler: EventHandler<T, D>
+  handler: EventHandler<T, D>,
+  options?: HandlerOptions
 ): EventHandler<T, D> {
   return defineEventHandler<T>(async (event) => {
+    const { roles } = options || {}
     const config = useRuntimeConfig(event)
     const token = getCookie(event, 'token')
     const { findUser } = useDb()
@@ -22,7 +24,11 @@ export function defineProtectedHandler<T extends EventHandlerRequest, D>(
       const user = await findUser({ id: decoded.userId })
 
       if (!user) {
-        throw new Error('User not found')
+        throw new ErrorWithStatusCode(401, 'Unauthorized')
+      }
+
+      if (roles && !roles.includes(user.role.name)) {
+        throw new ErrorWithStatusCode(403, 'Forbidden')
       }
 
       event.context.user = {
@@ -31,12 +37,25 @@ export function defineProtectedHandler<T extends EventHandlerRequest, D>(
         role: user.role,
       }
     } catch (error) {
-      throw createError({
-        statusCode: 401,
-        message: 'Unauthorized'
-      })
+      if (error instanceof ErrorWithStatusCode) {
+        throw createError({
+          statusCode: error.status,
+          message: error.message
+        })
+      }
     }
 
     return await handler(event)
   })
+}
+
+type HandlerOptions = {
+  roles?: string[]
+}
+
+class ErrorWithStatusCode extends Error {
+  constructor(readonly status: number, message: string) {
+    super(message)
+    this.name = 'ErrorWithStatusCode'
+  }
 }

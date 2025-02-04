@@ -1,9 +1,9 @@
 <template>
   <button
     type="button"
-    class="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-100"
+    class="flex text-left gap-2 px-4 py-2 rounded-md bg-gray-200"
     :class="{
-      'hover:bg-gray-200': !answered,
+      'hover:bg-gray-300': !answered,
       'bg-green-400': isCorrect,
       'bg-red-400': isIncorrect
     }"

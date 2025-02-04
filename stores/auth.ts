@@ -36,8 +36,21 @@ export const useAuth = defineStore('auth', () => {
         credentials: 'same-origin'
       })
 
-      setUser(response.user)
+      setUser(response)
       return true
+    } catch (error: any) {
+      return false
+    }
+  }
+
+  async function checkRoles(roles: string[]) {
+    try {
+      const response = await fetch('/api/auth/me', {
+        credentials: 'same-origin'
+      })
+
+      setUser(response)
+      return roles.includes(response.role.name)
     } catch (error: any) {
       return false
     }
@@ -47,6 +60,7 @@ export const useAuth = defineStore('auth', () => {
     user,
     token,
     login,
-    check
+    check,
+    checkRoles
   }
 })

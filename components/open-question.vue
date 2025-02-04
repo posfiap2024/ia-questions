@@ -20,6 +20,7 @@
 
     <div class="flex-auto">
       <UiButton
+        v-if="!hideButton"
         variant="primary"
         :disabled="answered"
         @click="handleAnswer"
@@ -33,20 +34,25 @@
 <script setup lang="ts">
   interface Props {
     statement: string,
-    answer: string
+    answer: string,
+    preview?: boolean
   }
 
   interface Emits {
     (e: 'answer', answer: string): void
   }
 
-  const props = defineProps<Props>()
+  const props = withDefaults(defineProps<Props>(), {
+    preview: false
+  })
+
   const emit = defineEmits<Emits>()
 
   const studentAnswer = defineModel<string>({ default: '' })
   const answered = ref(false)
   const correct = ref()
-  const feedback = ref('')
+  const feedback = ref(props.preview ? props.answer : '')
+  const hideButton = computed(() => props.preview || answered.value)
 
   async function handleAnswer() {
     if (answered.value) return

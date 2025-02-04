@@ -33,7 +33,7 @@ Coletar informações sobre a disciplina e o tema desejado é essencial antes de
 - Cada questão pode ter um element \`<options>\` contendo opções de resposta múltipla escolha;
 - Cada opção deve estar contida em um elemento \`<option>\`;
 - A tag \`<option>\` deve ter um atributo \`correct\` SOMENTE na resposta correta com o valor "true";
-- Perguntas dissertativa devem vir com uma  tag \`<answer>\` com a descrição do que é esperado que o aluno desenvolva na resposta;
+- Perguntas dissertativa devem vir com uma  tag \`<answer>\` com a descrição bem detalhada do que é esperado que o aluno desenvolva na resposta;
 
 O formato de resposta deve seguir a seguinte estrutura XML de exemplo abaixo:
 

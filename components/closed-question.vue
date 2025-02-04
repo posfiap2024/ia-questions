@@ -25,12 +25,15 @@
     options: {
       text: string,
       correct: boolean
-    }[]
+    }[],
+    preview?: boolean
   }
 
-  defineProps<Props>()
+  const props = withDefaults(defineProps<Props>(), {
+    preview: false
+  })
 
-  const answer = ref()
+  const answer = ref(props.preview ? props.options.findIndex(option => option.correct) : undefined)
   const answered = computed(() => answer.value !== undefined)
 
   function handleAnswer(index: number) {

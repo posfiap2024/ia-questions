@@ -14,6 +14,8 @@ export default defineNitroPlugin(async () => {
 
   // DROP TABLES
   await db.sql`DROP TABLE IF EXISTS students_questionnaires`
+  await db.sql`DROP TABLE IF EXISTS question_options`
+  await db.sql`DROP TABLE IF EXISTS questions`
   await db.sql`DROP TABLE IF EXISTS questionnaires`
   await db.sql`DROP TABLE IF EXISTS users`
   await db.sql`DROP TABLE IF EXISTS roles`
@@ -66,10 +68,35 @@ export default defineNitroPlugin(async () => {
     )
   `
 
-  await db.sql`INSERT INTO questionnaires (subject, topic, owner_id) VALUES ('Matemática', 'Algebra', (SELECT id FROM users WHERE username = 'admin'))`
-  await db.sql`INSERT INTO questionnaires (subject, topic, owner_id) VALUES ('História', 'Segunda Guerra Mundial', (SELECT id FROM users WHERE username = 'professor'))`
-
   consola.info('Questionnaires created')
+
+  // Create and fill table for questions
+  await db.sql`
+    CREATE TABLE IF NOT EXISTS questions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      questionnaire_id INTEGER NOT NULL,
+      statement TEXT NOT NULL,
+      type TEXT NOT NULL,
+      answer TEXT,
+      FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id)
+    )
+  `
+
+  consola.info('Questions created')
+
+  // Create and fill table for question_options
+
+  await db.sql`
+    CREATE TABLE IF NOT EXISTS question_options (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      question_id INTEGER NOT NULL,
+      option TEXT NOT NULL,
+      correct BOOLEAN NOT NULL,
+      FOREIGN KEY (question_id) REFERENCES questions(id)
+    )
+  `
+
+  consola.info('Question options created')
 
   // Create and fill table for students_questionnaires
 
@@ -82,9 +109,6 @@ export default defineNitroPlugin(async () => {
       FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id)
     )
   `
-
-  await db.sql`INSERT INTO students_questionnaires (student_id, questionnaire_id) VALUES ((SELECT id FROM users WHERE username = 'student'), (SELECT id FROM questionnaires WHERE subject = 'Matemática'))`
-  await db.sql`INSERT INTO students_questionnaires (student_id, questionnaire_id) VALUES ((SELECT id FROM users WHERE username = 'student'), (SELECT id FROM questionnaires WHERE subject = 'História'))`
 
   consola.info('Students questionnaires created')
 
