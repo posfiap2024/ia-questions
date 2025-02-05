@@ -10,7 +10,6 @@ export function defineProtectedHandler<T extends EventHandlerRequest, D>(
     const { roles } = options || {}
     const config = useRuntimeConfig(event)
     const token = getCookie(event, 'token')
-    const { findUser } = useDb()
 
     if (!token) {
       throw createError({
@@ -21,7 +20,7 @@ export function defineProtectedHandler<T extends EventHandlerRequest, D>(
 
     try {
       const decoded = jwt.verify(token, config.jwtSecret) as { userId: number, roleId: number }
-      const user = await findUser({ id: decoded.userId })
+      const user = await findUser(decoded.userId)
 
       if (!user) {
         throw new ErrorWithStatusCode(401, 'Unauthorized')
@@ -47,6 +46,29 @@ export function defineProtectedHandler<T extends EventHandlerRequest, D>(
 
     return await handler(event)
   })
+}
+
+async function findUser(id: number) {
+  const db = useDatabase()
+  const result = await db
+    .prepare(`
+      SELECT u.id, u.username, u.password, r.id as role_id, r.name as role_name
+      FROM users AS u
+      JOIN roles AS r ON u.role_id = r.id
+      WHERE u.id = ?
+    `)
+    .bind(id)
+    .get() as any
+
+  return {
+    id: result.id,
+    username: result.username,
+    password: result.password,
+    role: {
+      id: result.role_id,
+      name: result.role_name,
+    }
+  }
 }
 
 type HandlerOptions = {

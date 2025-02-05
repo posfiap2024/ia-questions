@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { useDb } from '~/server/utils/db'
 
 const loginSchema = z.object({
   username: z.string(),
@@ -12,9 +11,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const body = await readBody(event)
   const { username, password } = loginSchema.parse(body)
-
-  const { findUser } = useDb()
-  const user = await findUser({ username })
+  const user = await findUser(username)
 
   if (!user || !(await bcrypt.compare(password, user.password!))) {
     throw createError({
@@ -43,3 +40,26 @@ export default defineEventHandler(async (event) => {
     }
   }
 })
+
+async function findUser(username: string) {
+  const db = useDatabase()
+  const result = await db
+    .prepare(`
+      SELECT u.id, u.username, u.password, r.id as role_id, r.name as role_name
+      FROM users AS u
+      JOIN roles AS r ON u.role_id = r.id
+      WHERE u.username = ?
+    `)
+    .bind(username)
+    .get() as any
+
+  return {
+    id: result.id,
+    username: result.username,
+    password: result.password,
+    role: {
+      id: result.role_id,
+      name: result.role_name,
+    }
+  }
+}

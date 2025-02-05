@@ -75,6 +75,16 @@ export default defineProtectedHandler(async (event) => {
     })
   )
 
+  await db
+    .prepare(`
+      INSERT INTO students_questionnaires (student_id, questionnaire_id)
+      SELECT id, ?
+      FROM users
+      WHERE role_id = (SELECT id FROM roles WHERE name = 'student');
+    `)
+    .bind(questionnaireId)
+    .run()
+
   await db.exec('COMMIT')
 }, {
   roles: ['admin', 'professor']

@@ -9,24 +9,81 @@ Gere {count} perguntas sobre {subject} com o tema {topic}
 `
 
 export default defineProtectedHandler(async (event) => {
-  const params = getRouterParams(event)
   const user = event.context.user as User
-  const { id } = paramsSchema.parse(params)
+  const id = getRouterParam(event, 'id')
+  const db = useDatabase()
 
-  return cachedQuestions(id, user.id)
-})
+  const questionnaire = await db
+    .prepare(`
+      SELECT q.id, q.subject, q.topic FROM students_questionnaires AS sq
+      JOIN questionnaires AS q ON sq.questionnaire_id = q.id
+      WHERE sq.student_id = ? AND sq.questionnaire_id = ?
+    `)
+    .bind(user.id, id)
+    .get() as QuestionnaireDTO
 
-const cachedQuestions = defineCachedFunction(async (id: number, _: number) => {
-  const { getQuestion } = useDb()
-  const { subject, topic, questionCount: count } = await getQuestion({ id })
+  if (!questionnaire) {
+    throw createError({
+      statusCode: 404,
+      message: 'Questionário não encontrado'
+    })
+  }
 
-  return useQuestions(
-    promptTemplate
-      .replace('{count}', count?.toLocaleString() ?? '1')
-      .replace('{subject}', subject?.toLocaleString() ?? 'Matemática')
-      .replace('{topic}', topic?.toLocaleString() ?? 'Geometria')
+  const questions = await db
+    .prepare(`
+      SELECT id, statement, type, answer FROM questions
+      WHERE questionnaire_id = ?
+    `)
+    .bind(questionnaire.id)
+    .all() as QuestionsDTO[]
+
+  const questionWithOptions = await Promise.all(
+    questions.map(async (question) => {
+      if (question.type !== 'closed')
+        return question
+
+      const options =  await db
+        .prepare(`
+          SELECT id, option, correct FROM question_options
+          WHERE question_id = ?
+        `)
+        .bind(question.id)
+        .all() as OptionsDTO[]
+
+      return {
+        ...question,
+        options: options.map(option => ({
+          id: option.id,
+          text: option.option,
+          correct: !!option.correct
+        }))
+      }
+    })
   )
-}, {
-  maxAge: 60 * 60 * 24,
-  getKey: (id, userId) => `questions:${id}:${userId}`,
+
+  return {
+    id: questionnaire.id,
+    subject: questionnaire.subject,
+    topic: questionnaire.topic,
+    questions: questionWithOptions
+  } as Questionnaire
 })
+
+type QuestionnaireDTO = {
+  id: number
+  subject: string
+  topic: string
+}
+
+type QuestionsDTO = {
+  id: number
+  statement: string
+  type: 'open' | 'closed'
+  answer: string
+}
+
+type OptionsDTO = {
+  id: string
+  option: string
+  correct: boolean
+}

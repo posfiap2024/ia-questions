@@ -2,7 +2,7 @@ export default defineProtectedHandler(async (event) => {
   const user = event.context.user as User
   const db = useDatabase()
 
-  const questions = await db
+  const questionnaires = await db
     .prepare(`
       SELECT * FROM questionnaires
       where owner_id = ?
@@ -10,11 +10,10 @@ export default defineProtectedHandler(async (event) => {
     .bind(user.id)
     .all() as any[]
 
-  return questions.map(question => ({
-    id: question.id as number,
-    subject: question.subject as string,
-    topic: question.topic as string,
-    questionCount: question.question_count as number
+  return questionnaires.map(questionnaire => ({
+    id: questionnaire.id as number,
+    subject: questionnaire.subject as string,
+    topic: questionnaire.topic as string
   }))
 }, {
   roles: ['admin', 'professor']

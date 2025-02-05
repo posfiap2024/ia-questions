@@ -1,12 +1,14 @@
 <template>
   <div class="flex flex-col bg-neutral-100 p-6 rounded-2xl shadow-md">
     <KeepAlive>
-      <component
-        :is="QuestionComponent"
-        v-bind="question"
-        :key="activeQuestion"
-        :preview="preview"
-      />
+      <FadeTransition>
+        <component
+          :is="QuestionComponent"
+          v-bind="question"
+          :key="activeQuestion"
+          :preview="preview"
+        />
+      </FadeTransition>
     </KeepAlive>
 
     <div class="flex justify-between gap-4 mt-6">
@@ -34,7 +36,7 @@
   import ClosedQuestion from './closed-question.vue'
 
   interface Props {
-    questions: any[],
+    questions: Question[],
     preview?: boolean
   }
 

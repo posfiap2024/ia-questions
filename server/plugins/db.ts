@@ -68,6 +68,11 @@ export default defineNitroPlugin(async () => {
     )
   `
 
+  await db.sql`
+    INSERT INTO questionnaires (subject, topic, owner_id)
+    VALUES ('Matemática', 'Algebra', (SELECT id FROM users WHERE username = 'professor'))
+  `
+
   consola.info('Questionnaires created')
 
   // Create and fill table for questions
@@ -80,6 +85,16 @@ export default defineNitroPlugin(async () => {
       answer TEXT,
       FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id)
     )
+  `
+
+  await db.sql`
+    INSERT INTO questions (questionnaire_id, statement, type, answer)
+    VALUES
+      (1, 'Qual é o resultado de 2 + 2?', 'closed', null),
+      (1, 'Qual é o resultado de 2 * 2?', 'closed', null),
+      (1, 'Qual é o resultado de 2 - 2?', 'closed', null),
+      (1, 'Qual é o resultado de 2 / 2?', 'closed', null),
+      (1, 'Qual é o resultado de 2 ^ 2?', 'open', 'É esperado que o aluno responda 4.');
   `
 
   consola.info('Questions created')
@@ -96,6 +111,27 @@ export default defineNitroPlugin(async () => {
     )
   `
 
+  await db.sql`
+    INSERT INTO question_options (question_id, option, correct)
+    VALUES
+      (1, '4', 1),
+      (1, '5', 0),
+      (1, '6', 0),
+      (1, '7', 0),
+      (2, '4', 1),
+      (2, '5', 0),
+      (2, '6', 0),
+      (2, '7', 0),
+      (3, '4', 0),
+      (3, '5', 0),
+      (3, '6', 0),
+      (3, '7', 1),
+      (4, '4', 0),
+      (4, '5', 0),
+      (4, '6', 1),
+      (4, '7', 0);
+  `
+
   consola.info('Question options created')
 
   // Create and fill table for students_questionnaires
@@ -108,6 +144,13 @@ export default defineNitroPlugin(async () => {
       FOREIGN KEY (student_id) REFERENCES users(id),
       FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id)
     )
+  `
+
+  await db.sql`
+    INSERT INTO students_questionnaires (student_id, questionnaire_id)
+    SELECT id, 1
+    FROM users
+    WHERE role_id = (SELECT id FROM roles WHERE name = 'student');
   `
 
   consola.info('Students questionnaires created')

@@ -108,28 +108,3 @@ function transformQuestions(json: ElementCompact): Questionnaire {
     }))
   }
 }
-
-type Questionnaire = {
-  subject: string
-  topic: string
-  questions: Question[]
-}
-
-type Question = OpenQuestion | ClosedQuestion
-
-type OpenQuestion = {
-  type: 'open'
-  statement: string
-  answer: string
-}
-
-type ClosedQuestion = {
-  type: 'closed'
-  statement: string
-  options: Option[]
-}
-
-type Option = {
-  text: string
-  correct: boolean
-}

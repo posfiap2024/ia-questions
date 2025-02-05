@@ -6,7 +6,7 @@ export const useAuth = defineStore('auth', () => {
   const user = ref<User>()
   const token = useSessionStorage('token', '')
 
-  function setUser(newUser: User) {
+  function setUser(newUser: User | undefined) {
     user.value = newUser
   }
 
@@ -56,10 +56,26 @@ export const useAuth = defineStore('auth', () => {
     }
   }
 
+  async function logout() {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'same-origin'
+      })
+
+      setUser(undefined)
+      setToken('')
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
   return {
     user,
     token,
     login,
+    logout,
     check,
     checkRoles
   }

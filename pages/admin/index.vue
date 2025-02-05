@@ -17,9 +17,9 @@
 
     <main class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <QuestionnaireCard
-        v-for="question in questions"
-        :key="question.id"
-        :question="question"
+        v-for="questionnaire in questionnaires"
+        :key="questionnaire.id"
+        v-bind="{ questionnaire }"
         admin
       />
     </main>
@@ -29,8 +29,8 @@
 <script setup lang="ts">
   import { NuxtLink } from '#components';
 
-  definePageMeta({ middleware: ['protected'], layout: 'base' })
+  definePageMeta({ middleware: ['admin'], layout: 'base' })
   useHead({ title: 'Admin' })
 
-  const { data: questions } = await useFetch('/api/admin/questions')
+  const { data: questionnaires } = await useFetch('/api/admin/questionnaires')
 </script>

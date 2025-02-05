@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
   interface Props {
-    questions: any[]
+    questions: Question[]
     loading?: boolean
   }
 

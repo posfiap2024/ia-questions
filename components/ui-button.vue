@@ -1,7 +1,7 @@
 <template>
   <component
     :is="as"
-    class="flex items-center justify-center gap-2 px-4 h-10 rounded-md cursor-pointer disabled:bg-neutral-300 disabled:cursor-not-allowed disabled:border-0 disabled:text-neutral-400"
+    class="flex items-center justify-center gap-2 px-4 h-10 rounded-md cursor-pointer disabled:bg-neutral-300 disabled:cursor-not-allowed disabled:border-0 disabled:text-neutral-400 bg-"
     :class="classes"
     :disabled="disabled"
   >
@@ -14,7 +14,7 @@
 <script setup lang="ts">
   interface Props {
     as?: any
-    variant?: 'primary' | 'secondary'
+    variant?: 'primary' | 'secondary' | 'danger'
     loading?: boolean,
     disabled?: boolean
   }
@@ -26,7 +26,8 @@
 
   const variants = {
     primary: 'bg-indigo-600 hover:bg-indigo-500 text-white',
-    secondary: 'border border-indigo-600 hover:border-indigo-500 text-indigo-600 hover:text-indigo-500'
+    secondary: 'border border-indigo-600 hover:border-indigo-500 text-indigo-600 hover:text-indigo-500',
+    danger: 'border border-red-600 hover:border-red-500 text-red-600 hover:text-red-500'
   }
 
   const classes = computed(() => [variants[props.variant], {

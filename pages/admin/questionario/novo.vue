@@ -4,15 +4,7 @@
       Novo questionário
     </h1>
 
-    <Transition
-      mode="out-in"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      enter-active-class="transition ease duration-300"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-      leave-active-class="transition ease duration-300"
-    >
+    <FadeTransition>
       <Loading v-if="state === 'loading'" />
 
       <PreviewQuestionnaire
@@ -28,12 +20,12 @@
         v-model="formData"
         @submit="generateQuestionnaire"
       />
-    </Transition>
+    </FadeTransition>
   </div>
 </template>
 
 <script lang="ts" setup>
-  definePageMeta({ middleware: ['protected'], layout: 'base' })
+  definePageMeta({ middleware: ['admin'], layout: 'base' })
   useHead({ title: 'Novo questionário' })
 
   const formData = ref({
@@ -42,7 +34,8 @@
     questionCount: 5
   })
 
-  const questions = ref<any[]>([])
+  const questionnaire = ref<Questionnaire>()
+  const questions = computed(() => questionnaire.value?.questions || [])
   const state = ref<'ready' | 'loading' | 'fetching'>('ready')
   const hasGeneratedQuestions = computed(() => questions.value.length > 0)
 
@@ -51,7 +44,7 @@
 
     state.value = 'loading'
 
-    const response = await $fetch('/api/questions/generate', {
+    const response = await $fetch<Questionnaire>('/api/admin/questionnaires/generate', {
       method: 'POST',
       body: {
         subject: subject,
@@ -61,14 +54,14 @@
     })
 
     state.value = 'ready'
-    questions.value = response.questions
+    questionnaire.value = response
   }
 
   async function saveQuestionnaire() {
     const { subject, topic } = formData.value
     state.value = 'fetching'
 
-    await $fetch('/api/questions', {
+    await $fetch('/api/admin/questionnaires', {
       method: 'POST',
       body: {
         subject: subject,
@@ -80,8 +73,4 @@
     state.value = 'ready'
     navigateTo('/admin')
   }
-
-  watch(questions, () => {
-    console.log(questions.value)
-  })
 </script>
