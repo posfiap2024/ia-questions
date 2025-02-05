@@ -1,13 +1,3 @@
-import { z } from 'zod'
-
-const paramsSchema = z.object({
-  id: z.coerce.number()
-})
-
-const promptTemplate = `
-Gere {count} perguntas sobre {subject} com o tema {topic}
-`
-
 export default defineProtectedHandler(async (event) => {
   const user = event.context.user as User
   const id = getRouterParam(event, 'id')
@@ -15,9 +5,8 @@ export default defineProtectedHandler(async (event) => {
 
   const questionnaire = await db
     .prepare(`
-      SELECT q.id, q.subject, q.topic FROM students_questionnaires AS sq
-      JOIN questionnaires AS q ON sq.questionnaire_id = q.id
-      WHERE sq.student_id = ? AND sq.questionnaire_id = ?
+      SELECT id, subject, topic FROM questionnaires
+      WHERE owner_id = ? AND id = ?
     `)
     .bind(user.id, id)
     .get() as QuestionnaireDTO

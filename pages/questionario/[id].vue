@@ -1,26 +1,27 @@
 <template>
-  <div class="flex flex-col gap-12 max-w-3xl mx-auto py-16">
-    <h1 class="text-3xl font-bold">
-      Questionário com <span class="text-primary">IA</span>
-    </h1>
+  <div class="flex flex-col gap-12 max-w-3xl mx-auto">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-md font-medium text-neutral-700">
+        {{  questionnaire?.subject  }}
+      </h1>
 
-    <Transition
-      mode="out-in"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      enter-active-class="transition ease duration-300"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-      leave-active-class="transition ease duration-300"
-    >
+      <p class="text-3xl font-bold">
+        {{ questionnaire?.topic }}
+      </p>
+    </div>
+
+    <FadeTransition>
+      <Loading
+        v-if="status === 'pending'"
+        title="Carregando questionário..."
+      />
+
       <Questionnaire
-        v-if="status === 'success'"
+        v-else-if="status === 'success'"
         :key="questionnaire?.id"
         v-bind="{ questions }"
       />
-
-      <Loading v-else />
-    </Transition>
+    </FadeTransition>
   </div>
 </template>
 
@@ -29,9 +30,8 @@
   useHead({ title: 'Questionário com IA' })
 
   const { id } = useRoute().params
-
   const { data: questionnaire, status } = await useLazyFetch<Questionnaire>(
-    () => `/api/questions/${id}`,
+    () => `/api/questionnaires/${id}`,
     { server: false }
   )
 

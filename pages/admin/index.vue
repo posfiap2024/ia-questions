@@ -15,14 +15,23 @@
       </UiButton>
     </header>
 
-    <main class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <main
+      v-if="hasQuestionnaires"
+      class="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
       <QuestionnaireCard
         v-for="questionnaire in questionnaires"
         :key="questionnaire.id"
         v-bind="{ questionnaire }"
         admin
+        @delete="() => deleteQuestionnaire(questionnaire.id)"
       />
     </main>
+
+    <EmptyState
+      v-else
+      admin
+    />
   </div>
 </template>
 
@@ -32,5 +41,12 @@
   definePageMeta({ middleware: ['admin'], layout: 'base' })
   useHead({ title: 'Admin' })
 
-  const { data: questionnaires } = await useFetch('/api/admin/questionnaires')
+  const { data, refresh } = await useFetch('/api/admin/questionnaires')
+  const questionnaires = computed(() => data.value || [])
+  const hasQuestionnaires = computed(() => questionnaires.value.length > 0)
+
+  async function deleteQuestionnaire(questionnaireId: number) {
+    await $fetch(`/api/admin/questionnaires/${questionnaireId}`, { method: 'DELETE' })
+    refresh()
+  }
 </script>

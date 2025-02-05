@@ -1,11 +1,14 @@
 <template>
-  <div class="flex flex-col flex-1 gap-8">
+  <div class="flex flex-col flex-1 gap-8 max-w-3xl w-full mx-auto">
     <h1 class="text-3xl font-bold">
       Novo questionário
     </h1>
 
     <FadeTransition>
-      <Loading v-if="state === 'loading'" />
+      <Loading
+        v-if="state === 'loading'"
+        title="Gerando questionário..."
+      />
 
       <PreviewQuestionnaire
         v-else-if="hasGeneratedQuestions"

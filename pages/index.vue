@@ -7,13 +7,18 @@
       </div>
     </header>
 
-    <main class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <main
+      v-if="hasQuestionnaires"
+      class="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
       <QuestionnaireCard
         v-for="questionnaire in questionnaires"
         :key="questionnaire.id"
         v-bind="{ questionnaire }"
       />
     </main>
+
+    <EmptyState v-else />
   </div>
 </template>
 
@@ -21,5 +26,7 @@
   definePageMeta({ middleware: ['student'], layout: 'base' })
   useHead({ title: 'Home' })
 
-  const { data: questionnaires } = await useFetch('/api/questions')
+  const { data } = await useFetch('/api/questionnaires')
+  const questionnaires = computed(() => data.value || [])
+  const hasQuestionnaires = computed(() => questionnaires.value.length > 0)
 </script>

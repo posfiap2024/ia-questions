@@ -1,15 +1,13 @@
 <template>
   <div class="flex flex-col bg-neutral-100 p-6 rounded-2xl shadow-md">
-    <KeepAlive>
-      <FadeTransition>
-        <component
-          :is="QuestionComponent"
-          v-bind="question"
-          :key="activeQuestion"
-          :preview="preview"
-        />
-      </FadeTransition>
-    </KeepAlive>
+    <FadeTransition>
+      <component
+        :is="QuestionComponent"
+        v-bind="question"
+        :key="activeQuestion"
+        :preview="preview"
+      />
+    </FadeTransition>
 
     <div class="flex justify-between gap-4 mt-6">
       <UiButton

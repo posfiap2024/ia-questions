@@ -23,6 +23,7 @@
         v-if="!hideButton"
         variant="primary"
         :disabled="answered"
+        :loading="isLoading"
         @click="handleAnswer"
       >
         Revisar
@@ -50,15 +51,16 @@
 
   const studentAnswer = defineModel<string>({ default: '' })
   const answered = ref(false)
+  const isLoading = ref(false)
   const correct = ref()
   const feedback = ref(props.preview ? props.answer : '')
   const hideButton = computed(() => props.preview || answered.value)
 
   async function handleAnswer() {
     if (answered.value) return
-    answered.value = true
+    isLoading.value = true
 
-    const response = await $fetch('/api/questions/review', {
+    const response = await $fetch('/api/questionnaires/review', {
       method: 'POST',
       body: {
         question: props.statement,
@@ -67,6 +69,8 @@
       }
     })
 
+    isLoading.value = false
+    answered.value = true
     correct.value = response.correct
     feedback.value = response.feedback
 

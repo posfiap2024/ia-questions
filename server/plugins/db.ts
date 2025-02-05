@@ -83,7 +83,7 @@ export default defineNitroPlugin(async () => {
       statement TEXT NOT NULL,
       type TEXT NOT NULL,
       answer TEXT,
-      FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id)
+      FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id) ON DELETE CASCADE
     )
   `
 
@@ -107,7 +107,7 @@ export default defineNitroPlugin(async () => {
       question_id INTEGER NOT NULL,
       option TEXT NOT NULL,
       correct BOOLEAN NOT NULL,
-      FOREIGN KEY (question_id) REFERENCES questions(id)
+      FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
     )
   `
 
@@ -142,7 +142,7 @@ export default defineNitroPlugin(async () => {
       questionnaire_id INTEGER NOT NULL,
       PRIMARY KEY (student_id, questionnaire_id),
       FOREIGN KEY (student_id) REFERENCES users(id),
-      FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id)
+      FOREIGN KEY (questionnaire_id) REFERENCES questionnaires(id) ON DELETE CASCADE
     )
   `
 
